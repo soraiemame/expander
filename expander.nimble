@@ -2,7 +2,7 @@
 
 version       = "0.1.0"
 author        = "soraie"
-description   = "expands code for competitive programing"
+description   = "expand codes for competitive programing"
 srcDir        = "src"
 bin           = @["expander"]
 binDir        = "bin"

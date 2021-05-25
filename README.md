@@ -33,9 +33,9 @@ expand [optional-params] [args: string...]
 ### Options
 
 |option name|type|default|description|
-|-|-|-|-|
-|-h, --help| | |print this cligen-erated help|
-|--help-syntax|||advanced: prepend,plurals,..|
+|:-:|:-:|:-:|:-:|
+|-h, --help|-|-|print this cligen-erated help|
+|--help-syntax|-|-|advanced: prepend,plurals,..|
 |--version|bool|false|print version|
 |-c, --comment|bool|false|print start end comment of the file|
 |-q, --quiet|bool|false|doesn't print any messages on stdout|
