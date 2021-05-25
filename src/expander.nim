@@ -5,9 +5,11 @@ import strutils,os,strformat,sets,osproc,terminal
 const version* = "Nim competitive code expander version 1.0.0"
 
 proc eraseWhitespace(s: string): string =
+    ## returns a string which all whitespaces of `s` are erased
     return s.multiReplace((" ",""),("\t",""),("\v",""),("\r",""),("\l",""),("\f",""))
 
 proc isNimble(fileName: string): bool =
+    ## returns whether `fileName` is a Nimble file
     let got = execProcess(fmt"nimble path {fileName}")
     if "Error:" in got:
         return false
@@ -20,7 +22,7 @@ proc getUsersLibraryPath(fileName: string,currentDir: string): string =
     return currentDir & "/" & fileName & ".nim"
 
 proc getImportedFilePaths(files: string,currentDir: string): (seq[string],seq[string]) =
-    ## (import|include) (...) => (users or nimble file path,else)
+    ## (import|include) (file names) => (users or nimble file path,else)
     let trimed = files.replace("import","").replace("include","").eraseWhitespace()
     var res = (newSeq[string](),newSeq[string]())
     for file in trimed.split(","):
@@ -34,15 +36,18 @@ proc getImportedFilePaths(files: string,currentDir: string): (seq[string],seq[st
                 res[1].add(file)
     return res
 
+## imported modules
 var importedModulePaths = initHashSet[string]()
 
 proc writeInfo(message: string,title: string,color: ForegroundColor) =
+    ## print outs `message` in `color`
     setForegroundColor(stderr,color)
     stderr.write(fmt"[{title}] ")
     resetAttributes(stderr)
     stderr.writeLine(message)
 
 proc expandFile*(filePath: string,comment: bool,noerror: bool = false,isTopFile: bool = false): string =
+    ## expands file using recursing
     if not noerror: writeInfo("bundling: " & filePath,"info",fgGreen)
     if importedModulePaths.contains(filePath):
         if not noerror: writeInfo(fmt"Canceled importing {filePath} because it was already imported.","warning",fgYellow)

@@ -11,7 +11,7 @@ license       = "MIT"
 # Dependencies
 
 requires "nim >= 1.4.6"
-# requires "cligen >= 1.5.3"
+requires "cligen >= 1.5.3"
 
 task tests, "expander":
     exec "nim c -r tests/tester1.nim"
