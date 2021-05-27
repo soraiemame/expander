@@ -48,13 +48,17 @@ proc writeInfo(message: string,title: string,color: ForegroundColor) =
 
 proc expandFile*(filePath: string,comment: bool,noerror: bool = false,isTopFile: bool = false): string =
     ## expands file using recursing
-    if not noerror: writeInfo("bundling: " & filePath,"info",fgGreen)
+    let exists = fileExists(filePath)
     if importedModulePaths.contains(filePath):
         if not noerror: writeInfo(fmt"Canceled importing {filePath} because it was already imported.","warning",fgYellow)
         return ""
-    importedModulePaths.incl filePath
-    if not fileExists(filePath):
+    if not exists:
+        if isTopFile:
+            writeInfo(fmt"{filePath} wasn't found.","Error",fgRed)
+            quit 1
         return ""
+    if not noerror: writeInfo("bundling: " & filePath,"info",fgGreen)
+    importedModulePaths.incl filePath
     var base = ""
     for line in lines(filePath):
         let trimed = if "#" in line: line[0..line.find('#')] else: line
@@ -65,7 +69,8 @@ proc expandFile*(filePath: string,comment: bool,noerror: bool = false,isTopFile:
             if files[0].len > 0:
                 base &= "\n"
             if files[1].len > 0:
-                base &= "import " & files[1].join(",")
+                let idx = if "import" in trimed: trimed.find("import") else: trimed.find("include")
+                base &= trimed[0..<idx] & "import " & files[1].join(",")
                 base &= "\n"
         else:
             base &= line
